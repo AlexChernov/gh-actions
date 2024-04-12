@@ -1,0 +1,33 @@
+# This is a basic workflow to help you get started with Actions
+name: 'rollback test'
+
+env:
+  DOCKER_BUILDKIT: 1
+  GOMEMLIMIT: 2GiB
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      N-1_version:
+        description: 'Previous application version'
+        required: true
+      N_version:
+        description: 'Next application version'
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  rollback_test:
+    runs-on: [pure-prod-krypton, aws, terraform, us-west-2]
+    steps:
+      - uses: actions/checkout@v4
+        name: 'checkout N-1'
+        with:
+           ref: ${{ github.event.inputs.N-1_version }}
+           path: 'n-1'
+      - uses: actions/checkout@v4
+        name: 'checkout N'
+        with:
+           ref: ${{ github.event.inputs.N_version }}
+           path: 'n'
