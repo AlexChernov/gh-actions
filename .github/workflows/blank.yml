@@ -19,7 +19,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   rollback_test:
-    runs-on: [pure-prod-krypton, aws, terraform, us-west-2]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         name: 'checkout N-1'
