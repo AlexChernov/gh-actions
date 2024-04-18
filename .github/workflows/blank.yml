@@ -32,11 +32,13 @@ jobs:
         id: manual_parameters
         if: github.event_name != 'pull_request'
         env:
-          N_MINUS_VERSION: ${{github.event.inputs.N-1_version}}
-          N_VERSION: ${{github.event.inputs.N_version}}
+          INPUT_1: ${{github.event.inputs.N-1_version}}
+          INPUT_2: ${{github.event.inputs.N_version}}
         run: |
-          echo "N_MINUS_VERSION=$N_MINUS_VERSION" >> $GITHUB_OUTPUT
-          echo "N_VERSION=$N_VERSION" >> $GITHUB_OUTPUT
+          echo $INPUT_1
+          echo $INPUT_2
+          echo "N_MINUS_VERSION=$INPUT_1" >> $GITHUB_OUTPUT
+          echo "N_VERSION=$INPUT_2" >> $GITHUB_OUTPUT
   rollback_test:
     runs-on: ubuntu-latest
     steps:
