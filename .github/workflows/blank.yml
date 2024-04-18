@@ -1,10 +1,8 @@
-# This is a basic workflow to help you get started with Actions
 name: 'rollback test'
 
 env:
   DOCKER_BUILDKIT: 1
   GOMEMLIMIT: 2GiB
-
 
 on:
   workflow_dispatch:
@@ -16,18 +14,39 @@ on:
         description: 'Next application version'
         required: true
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+
 jobs:
+  define_versions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Define versions for PR
+        id: pr_parameters
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "N_MINUS_VERSION={GITHUB_BASE_REF}" >> $GITHUB_OUTPUT
+          echo "N_VERSION={GITHUB_HEAD_REF}" >> $GITHUB_OUTPUT    steps:
+      - name: Define versions for manual run
+        id: manual_parameters
+        if: github.event_name != 'pull_request'
+        env:
+          N_MINUS_VERSION: ${{github.event.inputs.N-1_version}}
+          N_VERSION: ${{github.event.inputs.N_version}}
+        run: |
+          echo "N_MINUS_VERSION=$N_MINUS_VERSION" >> $GITHUB_OUTPUT
+          echo "N_VERSION=$N_VERSION" >> $GITHUB_OUTPUT
   rollback_test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         name: 'checkout N-1'
         with:
-           ref: ${{ github.event.inputs.N-1_version }}
+           ref: ${{ needs.define_versions.n_minus_version }}
            path: 'n-1'
       - uses: actions/checkout@v4
         name: 'checkout N'
         with:
-           ref: ${{ github.event.inputs.N_version }}
+           ref: ${{ needs.define_versions.n_version }}
            path: 'n'
