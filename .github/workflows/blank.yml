@@ -40,16 +40,19 @@ jobs:
           echo "N_MINUS_VERSION=$INPUT_1" >> $GITHUB_OUTPUT
           echo "N_VERSION=$INPUT_2" >> $GITHUB_OUTPUT
   rollback_test:
-    needs: define_versions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         name: 'checkout N-1'
+        env:
+          REF: ${{ needs.define_versions.N_MINUS_VERSION }}
         with:
-           ref: ${{ needs.define_versions.n_minus_version }}
+           ref: $REF
            path: 'n-1'
       - uses: actions/checkout@v4
         name: 'checkout N'
+        env:
+          REF: ${{ needs.define_versions.N_VERSION }}
         with:
-           ref: ${{ needs.define_versions.n_version }}
+           ref: $REF
            path: 'n'
