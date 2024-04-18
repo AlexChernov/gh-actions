@@ -40,6 +40,7 @@ jobs:
           echo "N_MINUS_VERSION=$INPUT_1" >> $GITHUB_OUTPUT
           echo "N_VERSION=$INPUT_2" >> $GITHUB_OUTPUT
   rollback_test:
+    needs: define_versions
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
