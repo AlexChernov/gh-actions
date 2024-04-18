@@ -19,15 +19,15 @@ on:
 
 
 jobs:
-  define_versions:
+  rollback_test:
     runs-on: ubuntu-latest
     steps:
       - name: Define versions for PR
         id: pr_parameters
         if: github.event_name == 'pull_request'
         run: |
-          echo "N_MINUS_VERSION={GITHUB_BASE_REF}" >> $GITHUB_OUTPUT
-          echo "N_VERSION={GITHUB_HEAD_REF}" >> $GITHUB_OUTPUT    steps:
+          echo "N_MINUS_VERSION={GITHUB_BASE_REF}" >> $GITHUB_ENV
+          echo "N_VERSION={GITHUB_HEAD_REF}" >> $GITHUB_ENV
       - name: Define versions for manual run
         id: manual_parameters
         if: github.event_name != 'pull_request'
@@ -37,23 +37,15 @@ jobs:
         run: |
           echo $INPUT_1
           echo $INPUT_2
-          echo "N_MINUS_VERSION=$INPUT_1" >> $GITHUB_OUTPUT
-          echo "N_VERSION=$INPUT_2" >> $GITHUB_OUTPUT
-  rollback_test:
-    needs: define_versions
-    runs-on: ubuntu-latest
-    steps:
+          echo "N_MINUS_VERSION=$INPUT_1" >> $GITHUB_ENV
+          echo "N_VERSION=$INPUT_2" >> $GITHUB_ENV
       - uses: actions/checkout@v4
         name: 'checkout N-1'
-        env:
-          REF: ${{ needs.define_versions.N_MINUS_VERSION }}
         with:
-           ref: $REF
+           ref: $N_MINUS_VERSION
            path: 'n-1'
       - uses: actions/checkout@v4
         name: 'checkout N'
-        env:
-          REF: ${{ needs.define_versions.N_VERSION }}
         with:
-           ref: $REF
+           ref: $N_VERSION
            path: 'n'
